@@ -42,10 +42,30 @@
       const repoOwner = "tupe12334";
       const repoName = "openu";
 
-      // Load the knowledge level database from localStorage
+      // Load the knowledge level database and file structure cache from localStorage
       const db = JSON.parse(localStorage.getItem("knowledgeLevels")) || {};
+      let fileStructureCache =
+        JSON.parse(localStorage.getItem("fileStructureCache")) || {};
+
+      // Check if the cache is expired (24 hours)
+      const cacheTimestamp = localStorage.getItem(
+        "fileStructureCacheTimestamp"
+      );
+      const now = Date.now();
+      if (!cacheTimestamp || now - cacheTimestamp > 24 * 60 * 60 * 1000) {
+        console.log("Cache expired. Clearing file structure cache.");
+        fileStructureCache = {};
+        localStorage.removeItem("fileStructureCache");
+        localStorage.removeItem("fileStructureCacheTimestamp");
+      }
 
       async function fetchFileStructure(path = "") {
+        // Check if the path exists in cache
+        if (fileStructureCache[path]) {
+          console.log("Loaded from cache:", path);
+          return fileStructureCache[path];
+        }
+
         const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
         const response = await fetch(url);
         if (!response.ok) {
@@ -53,7 +73,15 @@
             "Failed to load repository contents.";
           return [];
         }
-        return response.json();
+
+        const data = await response.json();
+        fileStructureCache[path] = data; // Cache the result
+        localStorage.setItem(
+          "fileStructureCache",
+          JSON.stringify(fileStructureCache)
+        );
+        localStorage.setItem("fileStructureCacheTimestamp", now); // Update cache timestamp
+        return data;
       }
 
       function saveKnowledgeInput(
@@ -112,9 +140,22 @@
               const segmentsContainer = document.createElement("div");
               segmentsContainer.classList.add("knowledge-input");
 
+              const segmentNames = [
+                "סעיף א",
+                "סעיף ב",
+                "סעיף ג",
+                "סעיף ד",
+                "סעיף ה",
+              ];
+
               for (let segmentIndex = 0; segmentIndex < 5; segmentIndex++) {
                 const segmentDiv = document.createElement("div");
-                segmentDiv.textContent = `Segment ${segmentIndex + 1}`;
+                segmentDiv.textContent = segmentNames[segmentIndex];
+
+                const questionHeader = document.createElement("div");
+                questionHeader.style.fontWeight = "bold";
+                questionHeader.textContent = "Questions:";
+                segmentDiv.appendChild(questionHeader);
 
                 for (
                   let questionIndex = 0;
