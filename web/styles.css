@@ -36,3 +36,9 @@ li {
   font-size: 14px;
   margin-left: 20px;
 }
+.iframe-container {
+  margin-left: 20px;
+  border: 1px solid #ccc;
+  width: 70%;
+  height: 600px;
+}

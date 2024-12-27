@@ -86,6 +86,13 @@ async function renderTree(container, path = "", recursive = false) {
       // Create a link to open the file's GitHub page in another tab
       li.innerHTML = `<a class="file" href="https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}" target="_blank">${file.name}</a>`;
 
+      if (file.name.endsWith(".html")) {
+        li.querySelector("a").addEventListener("click", (event) => {
+          event.preventDefault();
+          openHtmlFileInIframe(file.path);
+        });
+      }
+
       // Add inputs for 5 segments and 5 questions each only for .pdf and picture file types
       if (
         /\.pdf$|\.(png|jpe?g|gif|bmp|webp)$/i.test(file.name) &&
