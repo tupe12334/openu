@@ -32,6 +32,13 @@
         margin-left: 10px;
         display: block;
       }
+      .reload-button {
+        margin-left: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        color: blue;
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -84,6 +91,15 @@
         return data;
       }
 
+      function clearCacheForPath(path) {
+        delete fileStructureCache[path];
+        localStorage.setItem(
+          "fileStructureCache",
+          JSON.stringify(fileStructureCache)
+        );
+        console.log(`Cache cleared for path: ${path}`);
+      }
+
       function saveKnowledgeInput(
         filePath,
         segmentIndex,
@@ -113,6 +129,24 @@
 
           if (file.type === "dir") {
             li.innerHTML = `<span class="folder">${file.name}</span>`;
+
+            const reloadButton = document.createElement("span");
+            reloadButton.classList.add("reload-button");
+            reloadButton.textContent = "🔄";
+            reloadButton.title = "Reload Folder";
+
+            reloadButton.addEventListener("click", async (event) => {
+              event.stopPropagation(); // Prevent triggering folder toggle
+              clearCacheForPath(file.path);
+              const existingUl = li.querySelector("ul");
+              if (existingUl) {
+                existingUl.remove();
+              }
+              await renderTree(li, file.path, recursive);
+            });
+
+            li.appendChild(reloadButton);
+
             li.addEventListener("click", async (event) => {
               if (event.target.tagName.toLowerCase() === "input") {
                 return; // Prevent collapsing if input is clicked
