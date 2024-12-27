@@ -37,7 +37,6 @@
         cursor: pointer;
         font-size: 14px;
         color: blue;
-        text-decoration: underline;
       }
       .error-message {
         color: red;
@@ -166,19 +165,19 @@
 
             li.appendChild(reloadButton);
 
-            li.addEventListener("click", async (event) => {
-              if (event.target.tagName.toLowerCase() === "input") {
-                return; // Prevent collapsing if input is clicked
+            li.querySelector(".folder").addEventListener(
+              "click",
+              async (event) => {
+                event.stopPropagation(); // Prevent event bubbling
+                const existingUl = li.querySelector("ul");
+                if (existingUl) {
+                  existingUl.remove(); // Collapse the folder
+                } else {
+                  // Expand the folder and optionally load recursively
+                  await renderTree(li, file.path, recursive);
+                }
               }
-              event.stopPropagation(); // Prevent event bubbling
-              const existingUl = li.querySelector("ul");
-              if (existingUl) {
-                existingUl.remove(); // Collapse the folder
-              } else {
-                // Expand the folder and optionally load recursively
-                await renderTree(li, file.path, recursive);
-              }
-            });
+            );
 
             if (recursive) {
               await renderTree(li, file.path, recursive); // Load recursively
