@@ -28,8 +28,9 @@
       .file:before {
         content: "📄 ";
       }
-      .knowledge-level {
+      .knowledge-input {
         margin-left: 10px;
+        display: block;
       }
     </style>
   </head>
@@ -55,8 +56,20 @@
         return response.json();
       }
 
-      function saveKnowledgeLevel(filePath, level) {
-        db[filePath] = level;
+      function saveKnowledgeInput(
+        filePath,
+        segmentIndex,
+        questionIndex,
+        value
+      ) {
+        if (!db[filePath]) {
+          db[filePath] = {
+            segments: Array(5)
+              .fill()
+              .map(() => ({ questions: Array(5).fill(null) })),
+          };
+        }
+        db[filePath].segments[segmentIndex].questions[questionIndex] = value;
         console.log("Knowledge levels updated:", db);
         localStorage.setItem("knowledgeLevels", JSON.stringify(db));
       }
@@ -73,8 +86,8 @@
           if (file.type === "dir") {
             li.innerHTML = `<span class="folder">${file.name}</span>`;
             li.addEventListener("click", async (event) => {
-              if (event.target.tagName.toLowerCase() === "select") {
-                return; // Prevent collapsing if select input is clicked
+              if (event.target.tagName.toLowerCase() === "input") {
+                return; // Prevent collapsing if input is clicked
               }
               event.stopPropagation(); // Prevent event bubbling
               const existingUl = li.querySelector("ul");
@@ -93,28 +106,47 @@
             // Create a link to open the file's GitHub page in another tab
             li.innerHTML = `<a class="file" href="https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}" target="_blank">${file.name}</a>`;
 
-            // Add a dropdown to select knowledge level only for .pdf and image files
+            // Add inputs for 5 segments and 5 questions each only for .pdf and picture file types
             if (/\.pdf$|\.(png|jpe?g|gif|bmp|webp)$/i.test(file.name)) {
-              const select = document.createElement("select");
-              select.classList.add("knowledge-level");
+              // Check file extension
+              const segmentsContainer = document.createElement("div");
+              segmentsContainer.classList.add("knowledge-input");
 
-              for (let i = 1; i <= 5; i++) {
-                const option = document.createElement("option");
-                option.value = i;
-                option.textContent = `Level ${i}`;
-                select.appendChild(option);
+              for (let segmentIndex = 0; segmentIndex < 5; segmentIndex++) {
+                const segmentDiv = document.createElement("div");
+                segmentDiv.textContent = `Segment ${segmentIndex + 1}`;
+
+                for (
+                  let questionIndex = 0;
+                  questionIndex < 5;
+                  questionIndex++
+                ) {
+                  const input = document.createElement("input");
+                  input.type = "number";
+                  input.min = "1";
+                  input.max = "5";
+                  input.placeholder = `Q${questionIndex + 1}`;
+                  input.value =
+                    db[file.path]?.segments?.[segmentIndex]?.questions?.[
+                      questionIndex
+                    ] || "";
+
+                  input.addEventListener("input", (event) => {
+                    saveKnowledgeInput(
+                      file.path,
+                      segmentIndex,
+                      questionIndex,
+                      event.target.value
+                    );
+                  });
+
+                  segmentDiv.appendChild(input);
+                }
+
+                segmentsContainer.appendChild(segmentDiv);
               }
 
-              // Set the dropdown to the saved level if it exists
-              if (db[file.path]) {
-                select.value = db[file.path];
-              }
-
-              select.addEventListener("change", () => {
-                saveKnowledgeLevel(file.path, select.value);
-              });
-
-              li.appendChild(select);
+              li.appendChild(segmentsContainer);
             }
           }
 
