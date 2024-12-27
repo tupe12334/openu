@@ -1,3 +1,12 @@
+const IFRAME_CONTAINER_ID = "iframe-container";
+const IFRAME_CONTAINER_CLASS = "iframe-container";
+const HTML_CACHE_PREFIX = "htmlCache_";
+const ERROR_MESSAGE = "Error loading file content. Please try again.";
+const FRAME_BORDER = "0";
+const FRAME_WIDTH = "100%";
+const FRAME_HEIGHT = "50%";
+const INSTRUCTION_FILE_NAME = "instruction.html";
+
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("file-browser");
   renderTree(container, "", false).then(() => {
@@ -16,11 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function openHtmlFileInIframe(filePath) {
-  let iframeContainer = document.getElementById("iframe-container");
+  let iframeContainer = document.getElementById(IFRAME_CONTAINER_ID);
   if (!iframeContainer) {
     iframeContainer = document.createElement("div");
-    iframeContainer.id = "iframe-container";
-    iframeContainer.classList.add("iframe-container");
+    iframeContainer.id = IFRAME_CONTAINER_ID;
+    iframeContainer.classList.add(IFRAME_CONTAINER_CLASS);
     document.body.appendChild(iframeContainer);
   }
 
@@ -28,7 +37,7 @@ async function openHtmlFileInIframe(filePath) {
   await fetchAndDisplayInstructionFile(filePath, iframeContainer);
 
   // Check if the file content is already cached
-  const cachedContent = localStorage.getItem(`htmlCache_${filePath}`);
+  const cachedContent = localStorage.getItem(`${HTML_CACHE_PREFIX}${filePath}`);
   if (
     cachedContent &&
     cachedContent !== "undefined" &&
@@ -37,24 +46,27 @@ async function openHtmlFileInIframe(filePath) {
   ) {
     const blob = new Blob([cachedContent], { type: "text/html" });
     const blobUrl = URL.createObjectURL(blob);
-    iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="0" width="100%" height="50%"></iframe>`;
+    iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="${FRAME_BORDER}" width="${FRAME_WIDTH}" height="${FRAME_HEIGHT}"></iframe>`;
     return;
   }
 
   const fileContent = await fetchHtmlFileContent(filePath);
   if (fileContent) {
     // Cache the file content
-    localStorage.setItem(`htmlCache_${filePath}`, fileContent);
+    localStorage.setItem(`${HTML_CACHE_PREFIX}${filePath}`, fileContent);
     const blob = new Blob([fileContent], { type: "text/html" });
     const blobUrl = URL.createObjectURL(blob);
-    iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="0" width="100%" height="50%"></iframe>`;
+    iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="${FRAME_BORDER}" width="${FRAME_WIDTH}" height="${FRAME_HEIGHT}"></iframe>`;
   } else {
-    iframeContainer.innerHTML = `<div class="error-message">Error loading file content. Please try again.</div>`;
+    iframeContainer.innerHTML = `<div class="error-message">${ERROR_MESSAGE}</div>`;
   }
 }
 
 async function fetchAndDisplayInstructionFile(filePath, iframeContainer) {
-  const instructionFilePath = filePath.replace(/\/[^/]+$/, "/instruction.html");
+  const instructionFilePath = filePath.replace(
+    /\/[^/]+$/,
+    `/${INSTRUCTION_FILE_NAME}`
+  );
   const instructionContent = await fetchHtmlFileContent(instructionFilePath);
   if (instructionContent) {
     const instructionBlob = new Blob([instructionContent], {
@@ -62,7 +74,7 @@ async function fetchAndDisplayInstructionFile(filePath, iframeContainer) {
     });
     const instructionBlobUrl = URL.createObjectURL(instructionBlob);
     iframeContainer.innerHTML =
-      `<iframe src="${instructionBlobUrl}" frameborder="0" width="100%" height="50%"></iframe>` +
+      `<iframe src="${instructionBlobUrl}" frameborder="${FRAME_BORDER}" width="${FRAME_WIDTH}" height="${FRAME_HEIGHT}"></iframe>` +
       iframeContainer.innerHTML;
   }
 }
