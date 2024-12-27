@@ -24,6 +24,17 @@ async function openHtmlFileInIframe(filePath) {
     document.body.appendChild(iframeContainer);
   }
 
+  // Check if the instruction.html file exists and load it
+  const instructionFilePath = filePath.replace(/\/[^/]+$/, "/instruction.html");
+  const instructionContent = await fetchHtmlFileContent(instructionFilePath);
+  if (instructionContent) {
+    const instructionBlob = new Blob([instructionContent], {
+      type: "text/html",
+    });
+    const instructionBlobUrl = URL.createObjectURL(instructionBlob);
+    iframeContainer.innerHTML = `<iframe src="${instructionBlobUrl}" frameborder="0" width="100%" height="50%"></iframe>`;
+  }
+
   // Check if the file content is already cached
   const cachedContent = localStorage.getItem(`htmlCache_${filePath}`);
   if (
@@ -34,24 +45,32 @@ async function openHtmlFileInIframe(filePath) {
   ) {
     const blob = new Blob([cachedContent], { type: "text/html" });
     const blobUrl = URL.createObjectURL(blob);
-    iframeContainer.innerHTML = `<iframe src="${blobUrl}" frameborder="0" width="100%" height="100%"></iframe>`;
+    iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="0" width="100%" height="50%"></iframe>`;
     return;
   }
 
-  const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
-  try {
-    const response = await fetch(rawUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch file: ${filePath}`);
-    }
-    const fileContent = await response.text();
+  const fileContent = await fetchHtmlFileContent(filePath);
+  if (fileContent) {
     // Cache the file content
     localStorage.setItem(`htmlCache_${filePath}`, fileContent);
     const blob = new Blob([fileContent], { type: "text/html" });
     const blobUrl = URL.createObjectURL(blob);
-    iframeContainer.innerHTML = `<iframe src="${blobUrl}" frameborder="0" width="100%" height="100%"></iframe>`;
-  } catch (error) {
-    console.error(`Error loading HTML file ${filePath}:`, error);
+    iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="0" width="100%" height="50%"></iframe>`;
+  } else {
     iframeContainer.innerHTML = `<div class="error-message">Error loading file content. Please try again.</div>`;
+  }
+}
+
+async function fetchHtmlFileContent(filePath) {
+  const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
+  try {
+    const response = await fetch(rawUrl);
+    if (!response.ok) {
+      return null;
+    }
+    return await response.text();
+  } catch (error) {
+    console.error(`Error fetching HTML file ${filePath}:`, error);
+    return null;
   }
 }
