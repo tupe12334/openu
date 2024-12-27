@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub File Browser</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      ul {
+        list-style-type: none;
+        padding-left: 20px;
+      }
+      li {
+        margin: 5px 0;
+      }
+      .folder {
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .file {
+        margin-left: 20px;
+      }
+      .folder:before {
+        content: "📂 ";
+      }
+      .file:before {
+        content: "📄 ";
+      }
+      .knowledge-level {
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>GitHub File Browser</h1>
+    <div id="file-browser"></div>
+
+    <script>
+      const repoOwner = "tupe12334";
+      const repoName = "openu";
+
+      // Load the knowledge level database from localStorage
+      const db = JSON.parse(localStorage.getItem("knowledgeLevels")) || {};
+
+      async function fetchFileStructure(path = "") {
+        const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          document.getElementById("file-browser").textContent =
+            "Failed to load repository contents.";
+          return [];
+        }
+        return response.json();
+      }
+
+      function saveKnowledgeLevel(filePath, level) {
+        db[filePath] = level;
+        console.log("Knowledge levels updated:", db);
+        localStorage.setItem("knowledgeLevels", JSON.stringify(db));
+      }
+
+      async function renderTree(container, path = "", recursive = false) {
+        const files = await fetchFileStructure(path);
+
+        const ul = document.createElement("ul");
+        container.appendChild(ul);
+
+        for (const file of files) {
+          const li = document.createElement("li");
+
+          if (file.type === "dir") {
+            li.innerHTML = `<span class="folder">${file.name}</span>`;
+            li.addEventListener("click", async (event) => {
+              if (event.target.tagName.toLowerCase() === "select") {
+                return; // Prevent collapsing if select input is clicked
+              }
+              event.stopPropagation(); // Prevent event bubbling
+              const existingUl = li.querySelector("ul");
+              if (existingUl) {
+                existingUl.remove(); // Collapse the folder
+              } else {
+                // Expand the folder and optionally load recursively
+                await renderTree(li, file.path, recursive);
+              }
+            });
+
+            if (recursive) {
+              await renderTree(li, file.path, recursive); // Load recursively
+            }
+          } else {
+            // Create a link to open the file's GitHub page in another tab
+            li.innerHTML = `<a class="file" href="https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}" target="_blank">${file.name}</a>`;
+
+            // Add a dropdown to select knowledge level only for .pdf and image files
+            if (/\.pdf$|\.(png|jpe?g|gif|bmp|webp)$/i.test(file.name)) {
+              const select = document.createElement("select");
+              select.classList.add("knowledge-level");
+
+              for (let i = 1; i <= 5; i++) {
+                const option = document.createElement("option");
+                option.value = i;
+                option.textContent = `Level ${i}`;
+                select.appendChild(option);
+              }
+
+              // Set the dropdown to the saved level if it exists
+              if (db[file.path]) {
+                select.value = db[file.path];
+              }
+
+              select.addEventListener("change", () => {
+                saveKnowledgeLevel(file.path, select.value);
+              });
+
+              li.appendChild(select);
+            }
+          }
+
+          ul.appendChild(li);
+        }
+      }
+
+      // Initialize the file browser with recursive loading disabled by default
+      document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("file-browser");
+        renderTree(container, "", false);
+      });
+    </script>
+  </body>
+</html>
