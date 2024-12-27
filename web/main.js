@@ -61,7 +61,9 @@ async function fetchAndDisplayInstructionFile(filePath, iframeContainer) {
       type: "text/html",
     });
     const instructionBlobUrl = URL.createObjectURL(instructionBlob);
-    iframeContainer.innerHTML = `<iframe src="${instructionBlobUrl}" frameborder="0" width="100%" height="50%"></iframe>`;
+    iframeContainer.innerHTML =
+      `<iframe src="${instructionBlobUrl}" frameborder="0" width="100%" height="50%"></iframe>` +
+      iframeContainer.innerHTML;
   }
 }
 
