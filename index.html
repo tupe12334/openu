@@ -39,6 +39,11 @@
         color: blue;
         text-decoration: underline;
       }
+      .error-message {
+        color: red;
+        font-size: 14px;
+        margin-left: 20px;
+      }
     </style>
   </head>
   <body>
@@ -74,21 +79,25 @@
         }
 
         const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          document.getElementById("file-browser").textContent =
-            "Failed to load repository contents.";
-          return [];
-        }
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            console.warn(`Failed to load folder: ${path}`);
+            throw new Error(`Failed to load folder: ${path}`);
+          }
 
-        const data = await response.json();
-        fileStructureCache[path] = data; // Cache the result
-        localStorage.setItem(
-          "fileStructureCache",
-          JSON.stringify(fileStructureCache)
-        );
-        localStorage.setItem("fileStructureCacheTimestamp", now); // Update cache timestamp
-        return data;
+          const data = await response.json();
+          fileStructureCache[path] = data; // Cache the result
+          localStorage.setItem(
+            "fileStructureCache",
+            JSON.stringify(fileStructureCache)
+          );
+          localStorage.setItem("fileStructureCacheTimestamp", now); // Update cache timestamp
+          return data;
+        } catch (error) {
+          console.error(`Error loading folder ${path}:`, error);
+          throw error;
+        }
       }
 
       function clearCacheForPath(path) {
@@ -119,7 +128,17 @@
       }
 
       async function renderTree(container, path = "", recursive = false) {
-        const files = await fetchFileStructure(path);
+        let files;
+        try {
+          files = await fetchFileStructure(path);
+        } catch (error) {
+          const errorMessage = document.createElement("div");
+          errorMessage.classList.add("error-message");
+          errorMessage.textContent =
+            "Error loading folder contents. Please try reloading.";
+          container.appendChild(errorMessage);
+          return;
+        }
 
         const ul = document.createElement("ul");
         container.appendChild(ul);
@@ -169,8 +188,11 @@
             li.innerHTML = `<a class="file" href="https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}" target="_blank">${file.name}</a>`;
 
             // Add inputs for 5 segments and 5 questions each only for .pdf and picture file types
-            if (/\.pdf$|\.(png|jpe?g|gif|bmp|webp)$/i.test(file.name)) {
-              // Check file extension
+            if (
+              /\.pdf$|\.(png|jpe?g|gif|bmp|webp)$/i.test(file.name) &&
+              !path.includes("info")
+            ) {
+              // Exclude knowledge levels inside 'info' folder
               const segmentsContainer = document.createElement("div");
               segmentsContainer.classList.add("knowledge-input");
 
