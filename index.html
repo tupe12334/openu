@@ -58,6 +58,10 @@
       let fileStructureCache =
         JSON.parse(localStorage.getItem("fileStructureCache")) || {};
 
+      // Load the expanded state from localStorage
+      const expandedState =
+        JSON.parse(localStorage.getItem("expandedState")) || {};
+
       // Check if the cache is expired (24 hours)
       const cacheTimestamp = localStorage.getItem(
         "fileStructureCacheTimestamp"
@@ -126,6 +130,15 @@
         localStorage.setItem("knowledgeLevels", JSON.stringify(db));
       }
 
+      function saveExpandedState(path, isExpanded) {
+        if (isExpanded) {
+          expandedState[path] = true;
+        } else {
+          delete expandedState[path];
+        }
+        localStorage.setItem("expandedState", JSON.stringify(expandedState));
+      }
+
       async function renderTree(container, path = "", recursive = false) {
         let files;
         try {
@@ -172,15 +185,17 @@
                 const existingUl = li.querySelector("ul");
                 if (existingUl) {
                   existingUl.remove(); // Collapse the folder
+                  saveExpandedState(file.path, false);
                 } else {
                   // Expand the folder and optionally load recursively
                   await renderTree(li, file.path, recursive);
+                  saveExpandedState(file.path, true);
                 }
               }
             );
 
-            if (recursive) {
-              await renderTree(li, file.path, recursive); // Load recursively
+            if (expandedState[file.path]) {
+              await renderTree(li, file.path, recursive); // Load recursively if previously expanded
             }
           } else {
             // Create a link to open the file's GitHub page in another tab
@@ -253,7 +268,19 @@
       // Initialize the file browser with recursive loading disabled by default
       document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById("file-browser");
-        renderTree(container, "", false);
+        renderTree(container, "", false).then(() => {
+          // Restore expanded state after initial render
+          for (const path in expandedState) {
+            if (expandedState[path]) {
+              const folderElement = document.querySelector(
+                `.folder:contains(${path.split("/").pop()})`
+              );
+              if (folderElement) {
+                folderElement.click();
+              }
+            }
+          }
+        });
       });
     </script>
   </body>
