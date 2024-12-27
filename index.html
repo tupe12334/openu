@@ -209,7 +209,7 @@
 
                 const questionHeader = document.createElement("div");
                 questionHeader.style.fontWeight = "bold";
-                questionHeader.textContent = "Questions:";
+                questionHeader.textContent = "שאלות:";
                 segmentDiv.appendChild(questionHeader);
 
                 for (
@@ -221,7 +221,7 @@
                   input.type = "number";
                   input.min = "1";
                   input.max = "5";
-                  input.placeholder = `Q${questionIndex + 1}`;
+                  input.placeholder = `שאלה ${questionIndex + 1}`;
                   input.value =
                     db[file.path]?.segments?.[segmentIndex]?.questions?.[
                       questionIndex
