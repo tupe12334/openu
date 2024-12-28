@@ -125,13 +125,33 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <FileTree
-        expandedState={expandedState}
-        setExpandedState={setExpandedStateState}
-        openHtmlFileInIframe={openHtmlFileInIframe}
-      />
-      <div id={IFRAME_CONTAINER_ID} className={IFRAME_CONTAINER_CLASS}></div>
+    <div className="App" style={{ display: "flex", height: "100vh" }}>
+      <div
+        id="file-browser"
+        style={{
+          width: "30%",
+          overflowY: "auto",
+          borderRight: "1px solid #ccc",
+          padding: "10px",
+        }}
+      >
+        <FileTree
+          expandedState={expandedState}
+          setExpandedState={setExpandedStateState}
+          openHtmlFileInIframe={openHtmlFileInIframe}
+        />
+      </div>
+      <div
+        id={IFRAME_CONTAINER_ID}
+        className={IFRAME_CONTAINER_CLASS}
+        style={{
+          width: "70%",
+          height: "100%",
+          overflowY: "auto",
+          padding: "10px",
+          border: "1px solid #ccc",
+        }}
+      ></div>
     </div>
   );
 };
