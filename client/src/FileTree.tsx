@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { minimatch } from "minimatch"; // Correct the import
+import ReactDOM from "react-dom";
+import { minimatch } from "minimatch";
 import { setExpandedState as setExpandedStateService } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
 
@@ -15,11 +16,85 @@ interface FileTreeProps {
   ignorePatterns?: string[]; // Add ignorePatterns prop
 }
 
+interface FileItemProps {
+  file: any;
+  openHtmlFileInIframe: (filePath: string) => Promise<void>;
+  renderTree: (
+    container: HTMLElement,
+    path: string,
+    isExpanded: boolean
+  ) => Promise<void>;
+  saveExpandedState: (path: string, isExpanded: boolean) => void;
+}
+
+const FileItem: React.FC<FileItemProps> = ({
+  file,
+  openHtmlFileInIframe,
+  renderTree,
+  saveExpandedState,
+}) => {
+  const liRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    const li = liRef.current;
+    if (li) {
+      const reloadIcon = document.createElement("span");
+      reloadIcon.textContent = "🔄";
+      reloadIcon.classList.add("reload-icon");
+      reloadIcon.addEventListener("click", (event) => {
+        event.stopPropagation();
+        while (li.lastChild && li.lastChild !== li.firstChild) {
+          li.removeChild(li.lastChild);
+        }
+        renderTree(li, file.path, true);
+      });
+      li.appendChild(reloadIcon);
+    }
+  }, [file, renderTree]);
+
+  const handleClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (file.type === "dir") {
+      const isExpanded = liRef.current?.classList.toggle("expanded");
+      saveExpandedState(file.path, !!isExpanded);
+      if (isExpanded) {
+        renderTree(liRef.current!, file.path, true);
+      } else {
+        while (
+          liRef.current?.lastChild &&
+          liRef.current?.lastChild !== liRef.current?.firstChild
+        ) {
+          liRef.current?.removeChild(liRef.current?.lastChild);
+        }
+      }
+    } else {
+      if (file.name.endsWith(".pdf")) {
+        window.open(
+          `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
+          "_blank"
+        );
+      } else {
+        openHtmlFileInIframe(file.path);
+      }
+    }
+  };
+
+  return (
+    <li
+      ref={liRef}
+      className={file.type === "dir" ? "folder" : "file"}
+      onClick={handleClick}
+    >
+      {file.name}
+    </li>
+  );
+};
+
 const FileTree: React.FC<FileTreeProps> = ({
   expandedState,
   setExpandedState,
   openHtmlFileInIframe,
-  ignorePatterns = [], // Default to an empty array
+  ignorePatterns = [],
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -47,63 +122,24 @@ const FileTree: React.FC<FileTreeProps> = ({
     isExpanded: boolean
   ) => {
     const files = await fetchFileTreeData(path, repoOwner, repoName);
-
-    // Create a list element to hold the file/folder items
     const ul = document.createElement("ul");
 
-    // Iterate over the files and folders
     for (const file of files) {
-      // Check if the file or folder matches any of the ignore patterns
       if (ignorePatterns.some((pattern) => minimatch(file.path, pattern))) {
         continue;
       }
 
       const li = document.createElement("li");
-      li.textContent = file.name;
-
-      // Create a reload icon
-      const reloadIcon = document.createElement("span");
-      reloadIcon.textContent = "🔄";
-      reloadIcon.classList.add("reload-icon");
-      reloadIcon.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent parent nodes from being toggled
-        while (li.lastChild && li.lastChild !== li.firstChild) {
-          li.removeChild(li.lastChild);
-        }
-        renderTree(li, file.path, true);
-      });
-
-      if (file.type === "dir") {
-        li.classList.add("folder");
-        li.addEventListener("click", (event) => {
-          event.stopPropagation(); // Prevent parent nodes from being toggled
-          const isExpanded = li.classList.toggle("expanded");
-          saveExpandedState(file.path, isExpanded);
-          if (isExpanded) {
-            renderTree(li, file.path, true);
-          } else {
-            while (li.lastChild && li.lastChild !== li.firstChild) {
-              li.removeChild(li.lastChild);
-            }
-          }
-        });
-      } else {
-        li.classList.add("file");
-        li.addEventListener("click", (event) => {
-          event.stopPropagation(); // Prevent parent nodes from being toggled
-          if (file.name.endsWith(".pdf")) {
-            window.open(
-              `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
-              "_blank"
-            );
-          } else {
-            openHtmlFileInIframe(file.path);
-          }
-        });
-      }
-
-      li.appendChild(reloadIcon); // Append the reload icon to the list item
       ul.appendChild(li);
+      ReactDOM.render(
+        <FileItem
+          file={file}
+          openHtmlFileInIframe={openHtmlFileInIframe}
+          renderTree={renderTree}
+          saveExpandedState={saveExpandedState}
+        />,
+        li
+      );
     }
 
     container.appendChild(ul);
