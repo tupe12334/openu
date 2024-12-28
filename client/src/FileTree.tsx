@@ -104,12 +104,12 @@ const FileTree: React.FC<FileTreeProps> = ({
       renderTree(container, "", false).then(() => {
         for (const path in expandedState) {
           if (expandedState[path]) {
-            const folderElement = document.querySelector(
-              `.folder:contains(${path.split("/").pop()})`
-            );
-            if (folderElement) {
-              folderElement.click();
-            }
+            const folderElements = container.querySelectorAll(".folder");
+            folderElements.forEach((folderElement) => {
+              if (folderElement.textContent === path.split("/").pop()) {
+                (folderElement as HTMLElement).click();
+              }
+            });
           }
         }
       });
