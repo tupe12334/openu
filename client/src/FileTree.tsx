@@ -14,15 +14,10 @@ interface FileTreeProps {
   ignorePatterns?: string[]; // Add ignorePatterns prop
 }
 
-interface FileItemProps {
-  file: any;
-  openHtmlFileInIframe: (filePath: string) => Promise<void>;
-  renderTree: (
-    container: HTMLElement,
-    path: string,
-    isExpanded: boolean
-  ) => Promise<void>;
-  saveExpandedState: (path: string, isExpanded: boolean) => void;
+interface File {
+  path: string;
+  name: string;
+  type: "file" | "dir";
 }
 
 const FileTree: React.FC<FileTreeProps> = ({
@@ -31,7 +26,7 @@ const FileTree: React.FC<FileTreeProps> = ({
   openHtmlFileInIframe,
   ignorePatterns = [],
 }) => {
-  const [fileTree, setFileTree] = useState<any[]>([]);
+  const [fileTree, setFileTree] = useState<File[]>([]);
 
   useEffect(() => {
     const loadTree = async () => {
