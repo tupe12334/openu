@@ -47,8 +47,9 @@ const FileItem: React.FC<FileItemProps> = ({
     event.stopPropagation();
     const li = liRef.current;
     if (li) {
-      while (li.lastChild && li.lastChild !== li.firstChild) {
-        li.removeChild(li.lastChild);
+      const ul = li.querySelector("ul");
+      if (ul) {
+        ul.remove();
       }
       renderTree(li, file.path, true);
     }
@@ -62,11 +63,9 @@ const FileItem: React.FC<FileItemProps> = ({
       if (isExpanded) {
         renderTree(liRef.current!, file.path, true);
       } else {
-        while (
-          liRef.current?.lastChild &&
-          liRef.current?.lastChild !== liRef.current?.firstChild
-        ) {
-          liRef.current?.removeChild(liRef.current?.lastChild);
+        const ul = liRef.current?.querySelector("ul");
+        if (ul) {
+          ul.remove();
         }
       }
     } else {
