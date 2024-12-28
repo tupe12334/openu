@@ -3,9 +3,7 @@ import ReactDOM from "react-dom";
 import { minimatch } from "minimatch";
 import { setExpandedState as setExpandedStateService } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
-
-const repoOwner = "tupe12334";
-const repoName = "openu";
+import { repoOwner, repoName } from "./consts";
 
 interface FileTreeProps {
   expandedState: { [key: string]: boolean };
@@ -105,7 +103,7 @@ const FileTree: React.FC<FileTreeProps> = ({
 
   useEffect(() => {
     const loadTree = async () => {
-      const files = await fetchFileTreeData("", repoOwner, repoName);
+      const files = await fetchFileTreeData("");
       setFileTree(files);
     };
     loadTree();
@@ -116,7 +114,7 @@ const FileTree: React.FC<FileTreeProps> = ({
     path: string,
     isExpanded: boolean
   ) => {
-    const files = await fetchFileTreeData(path, repoOwner, repoName);
+    const files = await fetchFileTreeData(path);
     const ul = document.createElement("ul");
 
     for (const file of files) {
