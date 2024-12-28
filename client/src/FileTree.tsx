@@ -75,7 +75,14 @@ const FileTree: React.FC<FileTreeProps> = ({
         li.classList.add("file");
         li.addEventListener("click", (event) => {
           event.stopPropagation(); // Prevent parent nodes from being toggled
-          openHtmlFileInIframe(file.path);
+          if (file.name.endsWith(".pdf")) {
+            window.open(
+              `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
+              "_blank"
+            );
+          } else {
+            openHtmlFileInIframe(file.path);
+          }
         });
       }
 
