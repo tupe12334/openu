@@ -1,13 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
 import { minimatch } from "minimatch";
-import {
-  setExpandedState as setExpandedStateService,
-  clearHtmlCacheForPath,
-} from "./services/cacheService";
+import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
+import FileItem from "./components/FileItem"; // Import FileItem
+import { setExpandedState as setExpandedStateService } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
-import { repoOwner, repoName } from "./consts";
-import ReloadButton from "./components/ReloadButton"; // Import ReloadButton
 
 interface FileTreeProps {
   expandedState: { [key: string]: boolean };
@@ -28,67 +24,6 @@ interface FileItemProps {
   ) => Promise<void>;
   saveExpandedState: (path: string, isExpanded: boolean) => void;
 }
-
-const FileItem: React.FC<FileItemProps> = ({
-  file,
-  openHtmlFileInIframe,
-  renderTree,
-  saveExpandedState,
-}) => {
-  const liRef = useRef<HTMLLIElement>(null);
-
-  const handleReloadClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    const li = liRef.current;
-    if (li) {
-      const ul = li.querySelector("ul");
-      if (ul) {
-        ul.remove();
-      }
-      clearHtmlCacheForPath(file.path);
-      renderTree(li, file.path, true);
-    }
-  };
-
-  const handleClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    if (file.type === "dir") {
-      const isExpanded = liRef.current?.classList.toggle("expanded");
-      saveExpandedState(file.path, !!isExpanded);
-      if (isExpanded) {
-        renderTree(liRef.current!, file.path, true);
-      } else {
-        const ul = liRef.current?.querySelector("ul");
-        if (ul) {
-          ul.remove();
-        }
-      }
-    } else {
-      if (
-        file.name.endsWith(".pdf") ||
-        file.name.match(/\.(jpg|jpeg|png|gif)$/)
-      ) {
-        window.open(
-          `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
-          "_blank"
-        );
-      } else {
-        openHtmlFileInIframe(file.path);
-      }
-    }
-  };
-
-  return (
-    <li
-      ref={liRef}
-      className={file.type === "dir" ? "folder" : "file"}
-      onClick={handleClick}
-    >
-      {file.name}
-      <ReloadButton onClick={handleReloadClick} />
-    </li>
-  );
-};
 
 const FileTree: React.FC<FileTreeProps> = ({
   expandedState,
