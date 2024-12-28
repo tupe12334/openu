@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import FileTree from "./FileTree";
 import {
   getCachedHtmlContent,
   getExpandedState,
-  getFileStructureCache,
-  getFileStructureCacheTimestamp,
-  getKnowledgeLevels,
   setCachedHtmlContent,
-  setFileStructureCache,
 } from "./services/cacheService";
 
 const IFRAME_CONTAINER_ID = "iframe-container";
@@ -20,24 +16,11 @@ const INSTRUCTION_FILE_NAME = "instruction.html";
 const repoOwner = "tupe12334";
 const repoName = "openu";
 
-interface KnowledgeLevels {
-  [filePath: string]: {
-    segments: { questions: (number | null)[] }[];
-  };
-}
-
-interface FileStructureCache {
-  [path: string]: any;
-}
-
 interface ExpandedState {
   [path: string]: boolean;
 }
 
 const App: React.FC = () => {
-  const [db, setDb] = useState<KnowledgeLevels>(getKnowledgeLevels());
-  const [fileStructureCache, setFileStructureCacheState] =
-    useState<FileStructureCache>(getFileStructureCache());
   const [expandedState, setExpandedStateState] = useState<ExpandedState>(
     getExpandedState()
   );
