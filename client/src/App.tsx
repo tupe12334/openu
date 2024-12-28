@@ -128,6 +128,7 @@ const App: React.FC = () => {
           expandedState={expandedState}
           setExpandedState={setExpandedStateState}
           openHtmlFileInIframe={openHtmlFileInIframe}
+          ignorePatterns={["client/**", "web/**"]} // Add ignore patterns
         />
       </div>
       <div

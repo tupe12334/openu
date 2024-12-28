@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { minimatch } from "minimatch"; // Correct the import
 import {
   setExpandedState as setExpandedStateService,
   getFileStructureCache,
@@ -14,12 +15,14 @@ interface FileTreeProps {
     React.SetStateAction<{ [key: string]: boolean }>
   >;
   openHtmlFileInIframe: (filePath: string) => Promise<void>;
+  ignorePatterns?: string[]; // Add ignorePatterns prop
 }
 
 const FileTree: React.FC<FileTreeProps> = ({
   expandedState,
   setExpandedState,
   openHtmlFileInIframe,
+  ignorePatterns = [], // Default to an empty array
 }) => {
   useEffect(() => {
     const container = document.getElementById("file-browser");
@@ -65,6 +68,11 @@ const FileTree: React.FC<FileTreeProps> = ({
 
     // Iterate over the files and folders
     for (const file of files) {
+      // Check if the file or folder matches any of the ignore patterns
+      if (ignorePatterns.some((pattern) => minimatch(file.path, pattern))) {
+        continue;
+      }
+
       const li = document.createElement("li");
       li.textContent = file.name;
 
