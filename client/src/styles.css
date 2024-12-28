@@ -1,0 +1,55 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  margin: 0;
+}
+#file-browser {
+  width: 30%;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+}
+ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+li {
+  margin: 5px 0;
+}
+.folder {
+  cursor: pointer;
+  font-weight: bold;
+}
+.file {
+  margin-left: 20px;
+}
+.folder:before {
+  content: "📂 ";
+}
+.file:before {
+  content: "📄 ";
+}
+.knowledge-input {
+  margin-left: 10px;
+  display: block;
+}
+.reload-button {
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: blue;
+}
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-left: 20px;
+}
+.iframe-container {
+  width: 70%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
