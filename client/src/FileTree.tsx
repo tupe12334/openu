@@ -41,11 +41,7 @@ const FileTree: React.FC<FileTreeProps> = ({
     loadTree();
   }, []);
 
-  const renderTree = async (
-    container: HTMLElement,
-    path: string,
-    isExpanded: boolean
-  ) => {
+  const renderTree = async (container: HTMLElement, path: string) => {
     const files = await fetchFileTreeData(path);
     const ul = document.createElement("ul");
 
