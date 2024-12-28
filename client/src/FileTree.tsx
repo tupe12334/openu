@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { minimatch } from "minimatch";
 import { setExpandedState as setExpandedStateService } from "./services/cacheService";
@@ -96,25 +96,15 @@ const FileTree: React.FC<FileTreeProps> = ({
   openHtmlFileInIframe,
   ignorePatterns = [],
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [fileTree, setFileTree] = useState<any[]>([]);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      renderTree(container, "", false).then(() => {
-        for (const path in expandedState) {
-          if (expandedState[path]) {
-            const folderElements = container.querySelectorAll(".folder");
-            folderElements.forEach((folderElement) => {
-              if (folderElement.textContent === path.split("/").pop()) {
-                (folderElement as HTMLElement).click();
-              }
-            });
-          }
-        }
-      });
-    }
-  }, [expandedState]);
+    const loadTree = async () => {
+      const files = await fetchFileTreeData("", repoOwner, repoName);
+      setFileTree(files);
+    };
+    loadTree();
+  }, []);
 
   const renderTree = async (
     container: HTMLElement,
@@ -156,7 +146,21 @@ const FileTree: React.FC<FileTreeProps> = ({
     setExpandedStateService(newExpandedState);
   };
 
-  return <div ref={containerRef}></div>;
+  return (
+    <div>
+      <ul>
+        {fileTree.map((file) => (
+          <FileItem
+            key={file.path}
+            file={file}
+            openHtmlFileInIframe={openHtmlFileInIframe}
+            renderTree={renderTree}
+            saveExpandedState={saveExpandedState}
+          />
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 export default FileTree;
