@@ -70,7 +70,10 @@ const FileItem: React.FC<FileItemProps> = ({
         }
       }
     } else {
-      if (file.name.endsWith(".pdf")) {
+      if (
+        file.name.endsWith(".pdf") ||
+        file.name.match(/\.(jpg|jpeg|png|gif)$/)
+      ) {
         window.open(
           `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
           "_blank"
