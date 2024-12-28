@@ -2,7 +2,7 @@ import { minimatch } from "minimatch";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import FileItem from "./components/FileItem"; // Import FileItem
-import { setExpandedState as setExpandedStateService } from "./services/cacheService";
+import CacheService from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
 import { File, ExpandedState } from "./types";
 
@@ -62,7 +62,7 @@ const FileTree: React.FC<FileTreeProps> = ({
       delete newExpandedState[path];
     }
     setExpandedState(newExpandedState);
-    setExpandedStateService(newExpandedState);
+    CacheService.setExpandedState(newExpandedState);
   };
 
   return (

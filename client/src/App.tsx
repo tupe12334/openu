@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import FileTree from "./FileTree";
-import {
-  getCachedHtmlContent,
-  getExpandedState,
-  setCachedHtmlContent,
-} from "./services/cacheService";
+import CacheService from "./services/cacheService";
 import { ExpandedState } from "./types";
 
 const IFRAME_CONTAINER_ID = "iframe-container";
@@ -19,7 +15,7 @@ const repoName = "openu";
 
 const App: React.FC = () => {
   const [expandedState, setExpandedStateState] = useState<ExpandedState>(
-    getExpandedState()
+    CacheService.getExpandedState()
   );
 
   const openHtmlFileInIframe = async (filePath: string) => {
@@ -33,7 +29,7 @@ const App: React.FC = () => {
 
     await fetchAndDisplayInstructionFile(filePath, iframeContainer);
 
-    const cachedContent = getCachedHtmlContent(filePath);
+    const cachedContent = CacheService.getCachedHtmlContent(filePath);
     if (
       cachedContent &&
       cachedContent !== "undefined" &&
@@ -48,7 +44,7 @@ const App: React.FC = () => {
 
     const fileContent = await fetchHtmlFileContent(filePath);
     if (fileContent) {
-      setCachedHtmlContent(filePath, fileContent);
+      CacheService.setCachedHtmlContent(filePath, fileContent);
       const blob = new Blob([fileContent], { type: "text/html" });
       const blobUrl = URL.createObjectURL(blob);
       iframeContainer.innerHTML += `<iframe src="${blobUrl}" frameborder="${FRAME_BORDER}" width="${FRAME_WIDTH}" height="${FRAME_HEIGHT}"></iframe>`;

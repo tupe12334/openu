@@ -6,61 +6,90 @@ import {
   EXPANDED_STATE_KEY,
 } from "../consts";
 
-export const getCachedHtmlContent = (filePath: string): string | null => {
-  return localStorage.getItem(`${HTML_CACHE_PREFIX}${filePath}`);
-};
+class CacheService {
+  private static instance: CacheService;
 
-export const setCachedHtmlContent = (
-  filePath: string,
-  content: string
-): void => {
-  localStorage.setItem(`${HTML_CACHE_PREFIX}${filePath}`, content);
-};
+  private constructor() {}
 
-export const getFileStructureCache = (): any => {
-  return JSON.parse(localStorage.getItem(FILE_STRUCTURE_CACHE_KEY) || "{}");
-};
+  public static getInstance(): CacheService {
+    if (!CacheService.instance) {
+      CacheService.instance = new CacheService();
+    }
+    return CacheService.instance;
+  }
 
-export const setFileStructureCache = (cache: any): void => {
-  localStorage.setItem(FILE_STRUCTURE_CACHE_KEY, JSON.stringify(cache));
-};
+  public getCachedHtmlContent(filePath: string): string | null {
+    return localStorage.getItem(`${HTML_CACHE_PREFIX}${filePath}`);
+  }
 
-export const getFileStructureCacheTimestamp = (): number | null => {
-  const timestamp = localStorage.getItem(FILE_STRUCTURE_CACHE_TIMESTAMP_KEY);
-  return timestamp ? parseInt(timestamp, 10) : null;
-};
+  public setCachedHtmlContent(filePath: string, content: string): void {
+    localStorage.setItem(`${HTML_CACHE_PREFIX}${filePath}`, content);
+  }
 
-export const setFileStructureCacheTimestamp = (timestamp: number): void => {
-  localStorage.setItem(
-    FILE_STRUCTURE_CACHE_TIMESTAMP_KEY,
-    timestamp.toString()
-  );
-};
+  public getFileStructureCache(): any {
+    return JSON.parse(localStorage.getItem(FILE_STRUCTURE_CACHE_KEY) || "{}");
+  }
 
-export const getKnowledgeLevels = (): any => {
-  return JSON.parse(localStorage.getItem(KNOWLEDGE_LEVELS_KEY) || "{}");
-};
+  public setFileStructureCache(cache: any): void {
+    localStorage.setItem(FILE_STRUCTURE_CACHE_KEY, JSON.stringify(cache));
+  }
 
-export const setKnowledgeLevels = (levels: any): void => {
-  localStorage.setItem(KNOWLEDGE_LEVELS_KEY, JSON.stringify(levels));
-};
+  public getFileStructureCacheTimestamp(): number | null {
+    const timestamp = localStorage.getItem(FILE_STRUCTURE_CACHE_TIMESTAMP_KEY);
+    return timestamp ? parseInt(timestamp, 10) : null;
+  }
 
-export const getExpandedState = (): any => {
-  return JSON.parse(localStorage.getItem(EXPANDED_STATE_KEY) || "{}");
-};
+  public setFileStructureCacheTimestamp(timestamp: number): void {
+    localStorage.setItem(
+      FILE_STRUCTURE_CACHE_TIMESTAMP_KEY,
+      timestamp.toString()
+    );
+  }
 
-export const setExpandedState = (state: any): void => {
-  localStorage.setItem(EXPANDED_STATE_KEY, JSON.stringify(state));
-};
+  public getKnowledgeLevels(): any {
+    return JSON.parse(localStorage.getItem(KNOWLEDGE_LEVELS_KEY) || "{}");
+  }
 
-export const clearCacheForPath = (path: string): void => {
-  const fileStructureCache = getFileStructureCache();
-  delete fileStructureCache[path];
-  setFileStructureCache(fileStructureCache);
-  console.log(`Cache cleared for path: ${path}`);
-};
+  public setKnowledgeLevels(levels: any): void {
+    localStorage.setItem(KNOWLEDGE_LEVELS_KEY, JSON.stringify(levels));
+  }
 
-export const clearHtmlCacheForPath = (filePath: string): void => {
-  localStorage.removeItem(`${HTML_CACHE_PREFIX}${filePath}`);
-  console.log(`HTML cache cleared for path: ${filePath}`);
-};
+  public getExpandedState(): any {
+    return JSON.parse(localStorage.getItem(EXPANDED_STATE_KEY) || "{}");
+  }
+
+  public setExpandedState(state: any): void {
+    localStorage.setItem(EXPANDED_STATE_KEY, JSON.stringify(state));
+  }
+
+  public clearCacheForPath(path: string): void {
+    const fileStructureCache = this.getFileStructureCache();
+    delete fileStructureCache[path];
+    this.setFileStructureCache(fileStructureCache);
+    console.log(`Cache cleared for path: ${path}`);
+  }
+
+  public clearHtmlCacheForPath(filePath: string): void {
+    localStorage.removeItem(`${HTML_CACHE_PREFIX}${filePath}`);
+    console.log(`HTML cache cleared for path: ${filePath}`);
+  }
+}
+
+const cacheServiceInstance = CacheService.getInstance();
+
+export default cacheServiceInstance;
+
+export const {
+  getCachedHtmlContent,
+  setCachedHtmlContent,
+  getFileStructureCache,
+  setFileStructureCache,
+  getFileStructureCacheTimestamp,
+  setFileStructureCacheTimestamp,
+  getKnowledgeLevels,
+  setKnowledgeLevels,
+  getExpandedState,
+  setExpandedState,
+  clearCacheForPath,
+  clearHtmlCacheForPath,
+} = cacheServiceInstance;
