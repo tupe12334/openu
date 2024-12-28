@@ -42,17 +42,6 @@ const App: React.FC = () => {
     getExpandedState()
   );
 
-  useEffect(() => {
-    const cacheTimestamp = getFileStructureCacheTimestamp();
-    const now = Date.now();
-    if (!cacheTimestamp || now - cacheTimestamp > 24 * 60 * 60 * 1000) {
-      console.log("Cache expired. Clearing file structure cache.");
-      setFileStructureCacheState({});
-      setFileStructureCache({});
-      localStorage.removeItem("fileStructureCacheTimestamp");
-    }
-  }, []);
-
   const openHtmlFileInIframe = async (filePath: string) => {
     let iframeContainer = document.getElementById(IFRAME_CONTAINER_ID);
     if (!iframeContainer) {
