@@ -1,10 +1,7 @@
 import React, { useEffect } from "react";
 import { minimatch } from "minimatch"; // Correct the import
-import {
-  setExpandedState as setExpandedStateService,
-  getFileStructureCache,
-  setFileStructureCache,
-} from "./services/cacheService";
+import { setExpandedState as setExpandedStateService } from "./services/cacheService";
+import { fetchFileTreeData } from "./services/fileTreeService";
 
 const repoOwner = "tupe12334";
 const repoName = "openu";
@@ -45,23 +42,7 @@ const FileTree: React.FC<FileTreeProps> = ({
     path: string,
     isExpanded: boolean
   ) => {
-    let files;
-    const cachedFileStructure = JSON.parse(
-      localStorage.getItem("fileStructureCache") || "{}"
-    );
-    if (cachedFileStructure[path]) {
-      files = cachedFileStructure[path];
-    } else {
-      const response = await fetch(
-        `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`
-      );
-      files = await response.json();
-      cachedFileStructure[path] = files;
-      localStorage.setItem(
-        "fileStructureCache",
-        JSON.stringify(cachedFileStructure)
-      );
-    }
+    const files = await fetchFileTreeData(path, repoOwner, repoName);
 
     // Create a list element to hold the file/folder items
     const ul = document.createElement("ul");
