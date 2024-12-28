@@ -1,8 +1,10 @@
-const HTML_CACHE_PREFIX = "htmlCache_";
-const FILE_STRUCTURE_CACHE_KEY = "fileStructureCache";
-const FILE_STRUCTURE_CACHE_TIMESTAMP_KEY = "fileStructureCacheTimestamp";
-const KNOWLEDGE_LEVELS_KEY = "knowledgeLevels";
-const EXPANDED_STATE_KEY = "expandedState";
+import {
+  HTML_CACHE_PREFIX,
+  FILE_STRUCTURE_CACHE_KEY,
+  FILE_STRUCTURE_CACHE_TIMESTAMP_KEY,
+  KNOWLEDGE_LEVELS_KEY,
+  EXPANDED_STATE_KEY,
+} from "../consts";
 
 export const getCachedHtmlContent = (filePath: string): string | null => {
   return localStorage.getItem(`${HTML_CACHE_PREFIX}${filePath}`);

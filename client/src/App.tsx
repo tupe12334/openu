@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import "./styles.css";
 import FileTree from "./FileTree";
 import {
   getCachedHtmlContent,
-  setCachedHtmlContent,
-  getFileStructureCache,
-  setFileStructureCache,
-  getFileStructureCacheTimestamp,
-  setFileStructureCacheTimestamp,
-  getKnowledgeLevels,
-  setKnowledgeLevels,
   getExpandedState,
-  setExpandedState,
-  clearCacheForPath,
+  getFileStructureCache,
+  getFileStructureCacheTimestamp,
+  getKnowledgeLevels,
+  setCachedHtmlContent,
+  setFileStructureCache,
 } from "./services/cacheService";
 
 const IFRAME_CONTAINER_ID = "iframe-container";
