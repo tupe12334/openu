@@ -95,8 +95,6 @@ const FileTree: React.FC<FileTreeProps> = ({
     setExpandedState(newExpandedState);
     setExpandedStateService(newExpandedState);
   };
-
-  return <div id="file-browser"></div>;
 };
 
 export default FileTree;
