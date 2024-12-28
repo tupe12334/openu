@@ -57,6 +57,18 @@ const FileTree: React.FC<FileTreeProps> = ({
       const li = document.createElement("li");
       li.textContent = file.name;
 
+      // Create a reload icon
+      const reloadIcon = document.createElement("span");
+      reloadIcon.textContent = "🔄";
+      reloadIcon.classList.add("reload-icon");
+      reloadIcon.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent parent nodes from being toggled
+        while (li.lastChild && li.lastChild !== li.firstChild) {
+          li.removeChild(li.lastChild);
+        }
+        renderTree(li, file.path, true);
+      });
+
       if (file.type === "dir") {
         li.classList.add("folder");
         li.addEventListener("click", (event) => {
@@ -86,6 +98,7 @@ const FileTree: React.FC<FileTreeProps> = ({
         });
       }
 
+      li.appendChild(reloadIcon); // Append the reload icon to the list item
       ul.appendChild(li);
     }
 

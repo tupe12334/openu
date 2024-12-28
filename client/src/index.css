@@ -53,6 +53,12 @@ li:hover {
   font-size: 14px;
   color: blue;
 }
+.reload-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: blue;
+}
 .error-message {
   color: red;
   font-size: 14px;
