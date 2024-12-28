@@ -27,6 +27,16 @@ interface FileItemProps {
   saveExpandedState: (path: string, isExpanded: boolean) => void;
 }
 
+const ReloadButton: React.FC<{
+  onClick: (event: React.MouseEvent) => void;
+}> = ({ onClick }) => {
+  return (
+    <span className="reload-icon" onClick={onClick}>
+      🔄
+    </span>
+  );
+};
+
 const FileItem: React.FC<FileItemProps> = ({
   file,
   openHtmlFileInIframe,
@@ -35,22 +45,16 @@ const FileItem: React.FC<FileItemProps> = ({
 }) => {
   const liRef = useRef<HTMLLIElement>(null);
 
-  useEffect(() => {
+  const handleReloadClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
     const li = liRef.current;
     if (li) {
-      const reloadIcon = document.createElement("span");
-      reloadIcon.textContent = "🔄";
-      reloadIcon.classList.add("reload-icon");
-      reloadIcon.addEventListener("click", (event) => {
-        event.stopPropagation();
-        while (li.lastChild && li.lastChild !== li.firstChild) {
-          li.removeChild(li.lastChild);
-        }
-        renderTree(li, file.path, true);
-      });
-      li.appendChild(reloadIcon);
+      while (li.lastChild && li.lastChild !== li.firstChild) {
+        li.removeChild(li.lastChild);
+      }
+      renderTree(li, file.path, true);
     }
-  }, [file, renderTree]);
+  };
 
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -86,6 +90,7 @@ const FileItem: React.FC<FileItemProps> = ({
       onClick={handleClick}
     >
       {file.name}
+      <ReloadButton onClick={handleReloadClick} />
     </li>
   );
 };
