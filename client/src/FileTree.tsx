@@ -43,7 +43,9 @@ const FileTree: React.FC<FileTreeProps> = ({
     isExpanded: boolean
   ) => {
     let files;
-    const cachedFileStructure = JSON.parse(localStorage.getItem("fileStructureCache") || "{}");
+    const cachedFileStructure = JSON.parse(
+      localStorage.getItem("fileStructureCache") || "{}"
+    );
     if (cachedFileStructure[path]) {
       files = cachedFileStructure[path];
     } else {
@@ -52,7 +54,10 @@ const FileTree: React.FC<FileTreeProps> = ({
       );
       files = await response.json();
       cachedFileStructure[path] = files;
-      localStorage.setItem("fileStructureCache", JSON.stringify(cachedFileStructure));
+      localStorage.setItem(
+        "fileStructureCache",
+        JSON.stringify(cachedFileStructure)
+      );
     }
 
     // Create a list element to hold the file/folder items
@@ -65,7 +70,8 @@ const FileTree: React.FC<FileTreeProps> = ({
 
       if (file.type === "dir") {
         li.classList.add("folder");
-        li.addEventListener("click", () => {
+        li.addEventListener("click", (event) => {
+          event.stopPropagation(); // Prevent parent nodes from being toggled
           const isExpanded = li.classList.toggle("expanded");
           saveExpandedState(file.path, isExpanded);
           if (isExpanded) {
@@ -78,7 +84,10 @@ const FileTree: React.FC<FileTreeProps> = ({
         });
       } else {
         li.classList.add("file");
-        li.addEventListener("click", () => openHtmlFileInIframe(file.path));
+        li.addEventListener("click", (event) => {
+          event.stopPropagation(); // Prevent parent nodes from being toggled
+          openHtmlFileInIframe(file.path);
+        });
       }
 
       ul.appendChild(li);
