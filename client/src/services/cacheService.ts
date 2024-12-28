@@ -59,3 +59,8 @@ export const clearCacheForPath = (path: string): void => {
   setFileStructureCache(fileStructureCache);
   console.log(`Cache cleared for path: ${path}`);
 };
+
+export const clearHtmlCacheForPath = (filePath: string): void => {
+  localStorage.removeItem(`${HTML_CACHE_PREFIX}${filePath}`);
+  console.log(`HTML cache cleared for path: ${filePath}`);
+};

@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { minimatch } from "minimatch";
-import { setExpandedState as setExpandedStateService } from "./services/cacheService";
+import {
+  setExpandedState as setExpandedStateService,
+  clearHtmlCacheForPath,
+} from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
 import { repoOwner, repoName } from "./consts";
 
@@ -51,6 +54,7 @@ const FileItem: React.FC<FileItemProps> = ({
       if (ul) {
         ul.remove();
       }
+      clearHtmlCacheForPath(file.path);
       renderTree(li, file.path, true);
     }
   };
