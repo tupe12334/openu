@@ -7,6 +7,7 @@ import {
 } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
 import { repoOwner, repoName } from "./consts";
+import ReloadButton from "./components/ReloadButton"; // Import ReloadButton
 
 interface FileTreeProps {
   expandedState: { [key: string]: boolean };
@@ -27,16 +28,6 @@ interface FileItemProps {
   ) => Promise<void>;
   saveExpandedState: (path: string, isExpanded: boolean) => void;
 }
-
-const ReloadButton: React.FC<{
-  onClick: (event: React.MouseEvent) => void;
-}> = ({ onClick }) => {
-  return (
-    <span className="reload-icon" onClick={onClick}>
-      🔄
-    </span>
-  );
-};
 
 const FileItem: React.FC<FileItemProps> = ({
   file,
