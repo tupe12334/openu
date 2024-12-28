@@ -1,10 +1,13 @@
 import { FILE_STRUCTURE_CACHE_KEY, repoOwner, repoName } from "../consts";
 
-export const fetchFileTreeData = async (path: string): Promise<any> => {
+export const fetchFileTreeData = async (
+  path: string,
+  bypassCache = false
+): Promise<any> => {
   const cachedFileStructure = JSON.parse(
     localStorage.getItem(FILE_STRUCTURE_CACHE_KEY) || "{}"
   );
-  if (cachedFileStructure[path]) {
+  if (!bypassCache && cachedFileStructure[path]) {
     return cachedFileStructure[path];
   }
 

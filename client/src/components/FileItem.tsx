@@ -3,6 +3,7 @@ import { clearHtmlCacheForPath } from "../services/cacheService";
 import { repoOwner, repoName } from "../consts";
 import ReloadButton from "./ReloadButton";
 import { File } from "../types";
+import { fetchFileTreeData } from "../services/fileTreeService";
 
 interface FileItemProps {
   file: File;
@@ -23,7 +24,7 @@ const FileItem: React.FC<FileItemProps> = ({
 }) => {
   const liRef = useRef<HTMLLIElement>(null);
 
-  const handleReloadClick = (event: React.MouseEvent) => {
+  const handleReloadClick = async (event: React.MouseEvent) => {
     event.stopPropagation();
     const li = liRef.current;
     if (li) {
@@ -32,6 +33,7 @@ const FileItem: React.FC<FileItemProps> = ({
         ul.remove();
       }
       clearHtmlCacheForPath(file.path);
+      await fetchFileTreeData(file.path, true);
       renderTree(li, file.path, true);
     }
   };
