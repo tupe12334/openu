@@ -1,6 +1,6 @@
 import { minimatch } from "minimatch";
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import FileItem from "./components/FileItem"; // Import FileItem
 import { setExpandedState as setExpandedStateService } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
@@ -56,14 +56,14 @@ const FileTree: React.FC<FileTreeProps> = ({
 
       const li = document.createElement("li");
       ul.appendChild(li);
-      ReactDOM.render(
+      const root = createRoot(li);
+      root.render(
         <FileItem
           file={file}
           openHtmlFileInIframe={openHtmlFileInIframe}
           renderTree={renderTree}
           saveExpandedState={saveExpandedState}
-        />,
-        li
+        />
       );
     }
 
