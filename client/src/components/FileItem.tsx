@@ -36,31 +36,39 @@ const FileItem: React.FC<FileItemProps> = ({
     }
   };
 
+  const handleDirectoryClick = () => {
+    const isExpanded = liRef.current?.classList.toggle("expanded");
+    saveExpandedState(file.path, !!isExpanded);
+    if (isExpanded) {
+      renderTree(liRef.current!, file.path, true);
+    } else {
+      const ul = liRef.current?.querySelector("ul");
+      if (ul) {
+        ul.remove();
+      }
+    }
+  };
+
+  const handleFileClick = () => {
+    if (
+      file.name.endsWith(".pdf") ||
+      file.name.match(/\.(jpg|jpeg|png|gif)$/)
+    ) {
+      window.open(
+        `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
+        "_blank"
+      );
+    } else {
+      openHtmlFileInIframe(file.path);
+    }
+  };
+
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     if (file.type === "dir") {
-      const isExpanded = liRef.current?.classList.toggle("expanded");
-      saveExpandedState(file.path, !!isExpanded);
-      if (isExpanded) {
-        renderTree(liRef.current!, file.path, true);
-      } else {
-        const ul = liRef.current?.querySelector("ul");
-        if (ul) {
-          ul.remove();
-        }
-      }
+      handleDirectoryClick();
     } else {
-      if (
-        file.name.endsWith(".pdf") ||
-        file.name.match(/\.(jpg|jpeg|png|gif)$/)
-      ) {
-        window.open(
-          `https://github.com/${repoOwner}/${repoName}/blob/main/${file.path}`,
-          "_blank"
-        );
-      } else {
-        openHtmlFileInIframe(file.path);
-      }
+      handleFileClick();
     }
   };
 
