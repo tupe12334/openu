@@ -4,20 +4,13 @@ import { createRoot } from "react-dom/client";
 import FileItem from "./components/FileItem"; // Import FileItem
 import { setExpandedState as setExpandedStateService } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
+import { File, ExpandedState } from "./types";
 
 interface FileTreeProps {
-  expandedState: { [key: string]: boolean };
-  setExpandedState: React.Dispatch<
-    React.SetStateAction<{ [key: string]: boolean }>
-  >;
+  expandedState: ExpandedState;
+  setExpandedState: React.Dispatch<React.SetStateAction<ExpandedState>>;
   openHtmlFileInIframe: (filePath: string) => Promise<void>;
-  ignorePatterns?: string[]; // Add ignorePatterns prop
-}
-
-interface File {
-  path: string;
-  name: string;
-  type: "file" | "dir";
+  ignorePatterns?: string[];
 }
 
 const FileTree: React.FC<FileTreeProps> = ({

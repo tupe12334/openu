@@ -2,13 +2,10 @@ import React, { useRef } from "react";
 import { clearHtmlCacheForPath } from "../services/cacheService";
 import { repoOwner, repoName } from "../consts";
 import ReloadButton from "./ReloadButton";
+import { File } from "../types";
 
 interface FileItemProps {
-  file: {
-    path: string;
-    name: string;
-    type: "file" | "dir";
-  };
+  file: File;
   openHtmlFileInIframe: (filePath: string) => Promise<void>;
   renderTree: (
     container: HTMLElement,

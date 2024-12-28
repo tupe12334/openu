@@ -5,6 +5,7 @@ import {
   getExpandedState,
   setCachedHtmlContent,
 } from "./services/cacheService";
+import { ExpandedState } from "./types";
 
 const IFRAME_CONTAINER_ID = "iframe-container";
 const IFRAME_CONTAINER_CLASS = "iframe-container";
@@ -15,10 +16,6 @@ const FRAME_HEIGHT = "50%";
 const INSTRUCTION_FILE_NAME = "instruction.html";
 const repoOwner = "tupe12334";
 const repoName = "openu";
-
-interface ExpandedState {
-  [path: string]: boolean;
-}
 
 const App: React.FC = () => {
   const [expandedState, setExpandedStateState] = useState<ExpandedState>(
