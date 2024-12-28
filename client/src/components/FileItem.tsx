@@ -4,7 +4,11 @@ import { repoOwner, repoName } from "../consts";
 import ReloadButton from "./ReloadButton";
 
 interface FileItemProps {
-  file: any;
+  file: {
+    path: string;
+    name: string;
+    type: "file" | "dir";
+  };
   openHtmlFileInIframe: (filePath: string) => Promise<void>;
   renderTree: (
     container: HTMLElement,
