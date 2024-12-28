@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { minimatch } from "minimatch"; // Correct the import
 import { setExpandedState as setExpandedStateService } from "./services/cacheService";
 import { fetchFileTreeData } from "./services/fileTreeService";
@@ -21,20 +21,24 @@ const FileTree: React.FC<FileTreeProps> = ({
   openHtmlFileInIframe,
   ignorePatterns = [], // Default to an empty array
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const container = document.getElementById("file-browser");
-    renderTree(container, "", false).then(() => {
-      for (const path in expandedState) {
-        if (expandedState[path]) {
-          const folderElement = document.querySelector(
-            `.folder:contains(${path.split("/").pop()})`
-          );
-          if (folderElement) {
-            folderElement.click();
+    const container = containerRef.current;
+    if (container) {
+      renderTree(container, "", false).then(() => {
+        for (const path in expandedState) {
+          if (expandedState[path]) {
+            const folderElement = document.querySelector(
+              `.folder:contains(${path.split("/").pop()})`
+            );
+            if (folderElement) {
+              folderElement.click();
+            }
           }
         }
-      }
-    });
+      });
+    }
   }, [expandedState]);
 
   const renderTree = async (
@@ -115,6 +119,8 @@ const FileTree: React.FC<FileTreeProps> = ({
     setExpandedState(newExpandedState);
     setExpandedStateService(newExpandedState);
   };
+
+  return <div ref={containerRef}></div>;
 };
 
 export default FileTree;
