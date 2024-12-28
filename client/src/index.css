@@ -21,8 +21,14 @@ ul {
   list-style-type: none;
   padding-left: 20px;
 }
+ul:hover {
+  cursor: pointer;
+}
 li {
   margin: 5px 0;
+}
+li:hover {
+  cursor: pointer;
 }
 .folder {
   cursor: pointer;
