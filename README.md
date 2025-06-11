@@ -13,10 +13,11 @@ If you want to contribute, please follow these steps:
 1. Fork the repository.
 2. Create a new branch for your changes.
 3. Run `chmod +x scripts/force-anon.sh` to make the script executable. (This script will ensure that your contributions are anonymous.)
-4. Commit your changes with clear messages.
-5. Push your changes to your forked repository.
-6. Create a pull request to the main repository.
-7. Your contributions will be reviewed and merged if they meet the project's standards.
+4. Run `npm install` to install the necessary dependencies. (Specifically husky to run the script on commit to make sure your contributions are anonymous.)
+5. Commit your changes with clear messages.
+6. Push your changes to your forked repository.
+7. Create a pull request to the main repository.
+8. Your contributions will be reviewed and merged if they meet the project's standards.
 
 ## License
 
