@@ -7,7 +7,7 @@ https://chatgpt.com/g/g-676e6edacae4819180c747f44d624dc2-math-convertor
 
 ## Contributing
 
-This Repository is completely anuonymous, and we encourage you to contribute by adding your own materials or improving existing ones.
+This Repository is completely anonymous, and we encourage you to contribute by adding your own materials or improving existing ones.
 If you want to contribute, please follow these steps:
 
 1. Fork the repository.
