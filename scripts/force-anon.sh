@@ -16,4 +16,4 @@ else
 fi
 
 git reset --soft "$commit"
-exit 1
+exit 0
